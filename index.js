@@ -1,51 +1,42 @@
 import http from 'http';
-import homePage from './views/home/index.html.js'
+import fs from 'fs/promises';
+import {v4 as uuid} from 'uuid';
+
+import homePage from './views/home/index.html.js';
 import addBreedPage from './views/addBreed.html.js';
 import addCatPage from './views/addCat.html.js';
 import catShelterPage from './views/catShelter.html.js';
 import editCatPage from './views/editCat.html.js';
 import cssTemplate from './content/styles/site.css.js';
 
-const cats = [
-    {
-        id: 1,
-        imageUrl:'https://ichef.bbci.co.uk/news/976/cpsprodpb/12A9B/production/_111434467_gettyimages-1143489763.jpg',
-        name: 'Navcho',
-        breed: 'Bombay Cat',
-        description: 'Dominant and aggressive to other cats. Will probably eat you in your sleep. Very cute tho.',
-    },
-    {
-        id: 2,
-        imageUrl:'https://cdn.pixabay.com/photo/2015/06/19/14/20/cat-814952_1280.jpg',
-        name: 'Pretty Kitty',
-        breed: 'American Bobtail Cat',
-        description: 'Dominant and aggressive to other cats. Will probably eat you in your sleep. Very cute tho.',
-    },
-    {
-        id: 3,
-        imageUrl:'https://cdn.pixabay.com/photo/2018/08/08/05/12/cat-3591348_1280.jpg',
-        name: 'Sisa',
-        breed: 'Bengal Cat',
-        description: '',
-    },
-    {
-        id: 4,
-        imageUrl:'https://cdn.pixabay.com/photo/2017/02/20/18/03/cat-2083492_1280.jpg',
-        name: 'Pesho',
-        breed: 'British Shorthair Cat',
-        description: '',
-    },
-    {
-        id: 5,
-        imageUrl:'https://cdn.pixabay.com/photo/2014/04/13/20/49/cat-323262_1280.jpg',
-        name: 'Gosho',
-        breed: 'Unknown',
-        description: '',
-    },
+let cats = [];
 
-]
+initCats();
 
 const server = http.createServer((req, res) => {
+    if (req.method === 'POST'){
+        let body = '';
+
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        req.on('end', () => {
+            const data = new URLSearchParams(body);
+
+            cats.push({
+                id: uuid(),
+                ...Object.fromEntries(data.entries()),
+            })
+            saveCats();
+    
+            res.writeHead(302, {
+                'location': '/',
+            });
+    
+            res.end();
+        });
+        return;
+    }
 
     if (req.url === '/content/styles/site.css'){
         res.writeHead(200, {
@@ -70,6 +61,24 @@ const server = http.createServer((req, res) => {
     
     res.end();
 });
+
+async function initCats(){
+    try{
+        const catsJson = await fs.readFile('./cats.json', {encoding: 'utf-8'});
+        cats = JSON.parse(catsJson);
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
+async function saveCats(){
+    try{
+        const catsJson = JSON.stringify(cats);
+        await fs.writeFile('./cats.json', catsJson, {encoding: 'utf-8'});
+    } catch (err) {
+        console.error(err.message);
+    }
+}
 
 server.listen(5000);
 
