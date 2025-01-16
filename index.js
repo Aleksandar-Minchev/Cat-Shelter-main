@@ -10,6 +10,7 @@ import editCatPage from './views/editCat.html.js';
 import cssTemplate from './content/styles/site.css.js';
 
 let cats = [];
+let breeds = [];
 
 initCats();
 
@@ -23,11 +24,17 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             const data = new URLSearchParams(body);
 
-            cats.push({
-                id: uuid(),
-                ...Object.fromEntries(data.entries()),
-            })
-            saveCats();
+            if (req.url === '/cats/add-cat'){
+                cats.push({
+                    id: uuid(),
+                    ...Object.fromEntries(data.entries()),
+                })
+                saveCats();
+            } else if (req.url === '/cats/add-breed'){
+                breeds.push(Object.fromEntries(data.entries()));
+                saveBreeds();
+            }
+
     
             res.writeHead(302, {
                 'location': '/',
@@ -54,7 +61,7 @@ const server = http.createServer((req, res) => {
     switch (req.url){
         case '/': res.write(homePage(cats)); break;
         case '/cats/add-breed': res.write(addBreedPage); break;
-        case '/cats/add-cat': res.write(addCatPage(cats)); break;
+        case '/cats/add-cat': res.write(addCatPage(breeds)); break;
         case '/cats/edit-cat': res.write(editCatPage); break;
         case '/cats/cat-shelter': res.write(catShelterPage); break;
     }
@@ -66,6 +73,8 @@ async function initCats(){
     try{
         const catsJson = await fs.readFile('./cats.json', {encoding: 'utf-8'});
         cats = JSON.parse(catsJson);
+        const breedsJson = await fs.readFile('./breeds.json', {encoding: 'utf-8'});
+        breeds = JSON.parse(breedsJson);
     } catch (err) {
         console.error(err.message);
     }
@@ -73,8 +82,17 @@ async function initCats(){
 
 async function saveCats(){
     try{
-        const catsJson = JSON.stringify(cats);
+        const catsJson = JSON.stringify(cats, null, 2);
         await fs.writeFile('./cats.json', catsJson, {encoding: 'utf-8'});
+    } catch (err) {
+        console.error(err.message);
+    }
+}
+
+async function saveBreeds(){
+    try{
+        const breedsJson = JSON.stringify(breeds, null, 2);
+        await fs.writeFile('./breeds.json', breedsJson, {encoding: 'utf-8'});
     } catch (err) {
         console.error(err.message);
     }

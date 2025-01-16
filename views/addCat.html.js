@@ -1,4 +1,4 @@
-export default (cats) => `<!DOCTYPE html>
+export default (breeds) => `<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -32,7 +32,7 @@ export default (cats) => `<!DOCTYPE html>
             <input name="imageUrl" type="text" id="image">
             <label for="group">Breed</label>
             <select name="breed" id="group">
-                ${cats.map(cat => `<option value="${cat.breed}">${cat.breed}</option>`)}
+                ${breeds.map(breed => `<option value="${breed.breed}">${breed.breed}</option>`)}
             </select>
             <button type="submit">Add Cat</button>
         </form>
