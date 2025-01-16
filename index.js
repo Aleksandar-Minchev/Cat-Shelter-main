@@ -73,7 +73,9 @@ const server = http.createServer((req, res) => {
                 res.write(editCatPage(curCat, breeds))
         
             } else if (pathname.includes('/cats/cat-shelter/') && req.method === 'GET'){
-                console.log('shelter');                
+                const id = pathname.split('/cats/cat-shelter/')[1];
+                const curCat = cats.find(cat => cat.id == id);                              
+                res.write(catShelterPage(curCat));              
             }
     }
     
