@@ -8,6 +8,7 @@ import addCatPage from './views/addCat.html.js';
 import catShelterPage from './views/catShelter.html.js';
 import editCatPage from './views/editCat.html.js';
 import cssTemplate from './content/styles/site.css.js';
+import { log } from 'console';
 
 let cats = [];
 let breeds = [];
@@ -33,6 +34,8 @@ const server = http.createServer((req, res) => {
             } else if (req.url === '/cats/add-breed'){
                 breeds.push(Object.fromEntries(data.entries()));
                 saveBreeds();
+            } else if (req.url === '/cats/edit-cat'){
+
             }
 
     
@@ -45,7 +48,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    if (req.url === '/content/styles/site.css'){
+    if (req.url === '/content/styles/site.css' || req.url === '/cats/content/styles/site.css'){
         res.writeHead(200, {
             'content-type': 'text/css'
         });
@@ -58,12 +61,20 @@ const server = http.createServer((req, res) => {
         'content-type': 'text/html',
     });
 
-    switch (req.url){
+    const pathname = req.url;
+    switch (pathname){
         case '/': res.write(homePage(cats)); break;
         case '/cats/add-breed': res.write(addBreedPage); break;
         case '/cats/add-cat': res.write(addCatPage(breeds)); break;
-        case '/cats/edit-cat': res.write(editCatPage); break;
-        case '/cats/cat-shelter': res.write(catShelterPage); break;
+        default:
+            if (pathname.includes('/cats/edit-cat/') && req.method === 'GET'){
+                const id = pathname.split('/cats/edit-cat/')[1];
+                const curCat = cats.find(cat => cat.id == id);                              
+                res.write(editCatPage(curCat, breeds))
+        
+            } else if (pathname.includes('/cats/cat-shelter/') && req.method === 'GET'){
+                console.log('shelter');                
+            }
     }
     
     res.end();

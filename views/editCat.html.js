@@ -1,4 +1,4 @@
-export default `<!DOCTYPE html>
+export default (cat, breeds) => `<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -22,17 +22,17 @@ export default `<!DOCTYPE html>
         <h1>Cat Shelter</h1>
     </header>
     <main>
-        <form action="#" method="" class="cat-form" enctype="multipart/form-data">
+        <form action="/cats/edit-cat/${cat.id}" method="POST" class="cat-form" enctype="multipart/form-data">
             <h2>Edit Cat</h2>
             <label for="name">Name</label>
-            <input type="text" id="name" value="Pretty Cat">
+            <input type="text" id="name" value="${cat.name}">
             <label for="description">Description</label>
-            <textarea id="description">Dominant and aggressive to other cats. Will probably eat you in your sleep. Very cute tho.</textarea>
+            <textarea id="description">"${cat.description}"</textarea>
             <label for="image">Image</label>
-            <input type="file" id="image">
+            <input name="imageUrl" type="text" id="image" value="${cat.imageUrl}">
             <label for="group">Breed</label>
             <select id="group">
-                <option value="Fluffy Cat">Fluffy Cat</option>
+            ${breeds.map(breed => `<option value="${breed.breed}">${breed.breed}</option>`)}
             </select>
             <button>Edit Cat</button>
         </form>
