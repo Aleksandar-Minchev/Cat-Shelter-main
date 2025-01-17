@@ -8,7 +8,6 @@ import addCatPage from './views/addCat.html.js';
 import catShelterPage from './views/catShelter.html.js';
 import editCatPage from './views/editCat.html.js';
 import cssTemplate from './content/styles/site.css.js';
-import { log } from 'console';
 
 let cats = [];
 let breeds = [];
@@ -30,8 +29,7 @@ const server = http.createServer((req, res) => {
                 cats.push({
                     id: uuid(),
                     ...Object.fromEntries(data.entries()),
-                })
-                saveCats();
+                });
             } else if (pathname === '/cats/add-breed'){
                 breeds.push(Object.fromEntries(data.entries()));
                 saveBreeds();
@@ -41,15 +39,14 @@ const server = http.createServer((req, res) => {
                 Object.assign(curCat, {
                     id: id,
                     ...Object.fromEntries(data.entries())
-                })
-                saveCats();                         
-
+                });                    
             } else if (pathname.includes('/cats/cat-shelter/')) {
                 const id = pathname.split('/cats/edit-cat/')[1];
                 const index = cats.findIndex(cat => cat.id === id);
                 cats.splice(index, 1);
-                saveCats();
             }
+
+            saveCats();  
     
             res.writeHead(302, {
                 'location': '/',
@@ -93,11 +90,9 @@ const server = http.createServer((req, res) => {
                     Object.values(cat).some(value =>
                     value.toLowerCase().includes(searchedValue.toLowerCase())
                 ));                
-                res.write(homePage(result));
-                               
+                res.write(homePage(result));                               
             }
-    }
-    
+    }    
     res.end();
 });
 
