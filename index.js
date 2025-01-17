@@ -45,9 +45,10 @@ const server = http.createServer((req, res) => {
                 saveCats();                         
 
             } else if (pathname.includes('/cats/cat-shelter/')) {
-                // const id = pathname.split('/cats/cat-shelter/')[1];
-                // const curCat = cats.find(cat => cat.id == id);
-
+                const id = pathname.split('/cats/edit-cat/')[1];
+                const index = cats.findIndex(cat => cat.id === id);
+                cats.splice(index, 1);
+                saveCats();
             }
     
             res.writeHead(302, {
@@ -120,17 +121,6 @@ async function saveBreeds(){
         console.error(err.message);
     }
 }
-
-// async function editCat(){
-//     try{
-//         const catsJson = await fs.readFile('./cats.json', {encoding: 'utf-8'});
-//         cats = JSON.parse(catsJson);
-//         const breedsJson = await fs.readFile('./breeds.json', {encoding: 'utf-8'});
-//         breeds = JSON.parse(breedsJson);
-//     } catch (err) {
-//         console.error(err.message);
-//     }
-// }
 
 server.listen(5000);
 

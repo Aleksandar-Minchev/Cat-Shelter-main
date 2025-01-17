@@ -22,7 +22,7 @@ export default (cat) => `<!DOCTYPE html>
         <h1>Cat Shelter</h1>
     </header>
     <main>
-        <form action="#" method="" class="cat-form">
+        <form action="/cats/cat-shelter/${cat.id}" method="POST" class="cat-form">
             <h2>Shelter the cat</h2>
             <img src="${cat.imageUrl}" alt="">
             <label for="name">Name</label>
