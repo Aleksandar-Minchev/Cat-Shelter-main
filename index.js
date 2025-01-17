@@ -16,6 +16,7 @@ let breeds = [];
 initCats();
 
 const server = http.createServer((req, res) => {
+    const pathname = req.url;
     if (req.method === 'POST'){
         let body = '';
 
@@ -25,19 +26,29 @@ const server = http.createServer((req, res) => {
         req.on('end', () => {
             const data = new URLSearchParams(body);
 
-            if (req.url === '/cats/add-cat'){
+            if (pathname === '/cats/add-cat'){                
                 cats.push({
                     id: uuid(),
                     ...Object.fromEntries(data.entries()),
                 })
                 saveCats();
-            } else if (req.url === '/cats/add-breed'){
+            } else if (pathname === '/cats/add-breed'){
                 breeds.push(Object.fromEntries(data.entries()));
                 saveBreeds();
-            } else if (req.url === '/cats/edit-cat'){
+            } else if (pathname.includes('/cats/edit-cat/')) {
+                const id = pathname.split('/cats/edit-cat/')[1];
+                let curCat = cats.find(cat => cat.id === id);                
+                Object.assign(curCat, {
+                    id: id,
+                    ...Object.fromEntries(data.entries())
+                })
+                saveCats();                         
+
+            } else if (pathname.includes('/cats/cat-shelter/')) {
+                // const id = pathname.split('/cats/cat-shelter/')[1];
+                // const curCat = cats.find(cat => cat.id == id);
 
             }
-
     
             res.writeHead(302, {
                 'location': '/',
@@ -48,7 +59,7 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    if (req.url === '/content/styles/site.css' || req.url === '/cats/content/styles/site.css'){
+    if (pathname === '/content/styles/site.css' || pathname === '/cats/content/styles/site.css'){
         res.writeHead(200, {
             'content-type': 'text/css'
         });
@@ -60,8 +71,7 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, {
         'content-type': 'text/html',
     });
-
-    const pathname = req.url;
+    
     switch (pathname){
         case '/': res.write(homePage(cats)); break;
         case '/cats/add-breed': res.write(addBreedPage); break;
@@ -76,7 +86,7 @@ const server = http.createServer((req, res) => {
                 const id = pathname.split('/cats/cat-shelter/')[1];
                 const curCat = cats.find(cat => cat.id == id);                              
                 res.write(catShelterPage(curCat));              
-            }
+            } 
     }
     
     res.end();
@@ -110,6 +120,17 @@ async function saveBreeds(){
         console.error(err.message);
     }
 }
+
+// async function editCat(){
+//     try{
+//         const catsJson = await fs.readFile('./cats.json', {encoding: 'utf-8'});
+//         cats = JSON.parse(catsJson);
+//         const breedsJson = await fs.readFile('./breeds.json', {encoding: 'utf-8'});
+//         breeds = JSON.parse(breedsJson);
+//     } catch (err) {
+//         console.error(err.message);
+//     }
+// }
 
 server.listen(5000);
 
