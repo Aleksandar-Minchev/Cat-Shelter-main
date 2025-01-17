@@ -24,8 +24,8 @@ export default (cats) => `<!DOCTYPE html>
         </nav>
         <h1>Cat Shelter</h1>
         <form action="/search">
-            <input type="text">
-            <button type="button">Search</button>
+            <input name ="search" type="text" value=""/>
+            <button type="submit">Search</button>
         </form>
     </header>
 

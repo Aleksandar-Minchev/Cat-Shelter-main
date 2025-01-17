@@ -87,7 +87,15 @@ const server = http.createServer((req, res) => {
                 const id = pathname.split('/cats/cat-shelter/')[1];
                 const curCat = cats.find(cat => cat.id == id);                              
                 res.write(catShelterPage(curCat));              
-            } 
+            } else if (pathname.includes('/search')) {
+                const searchedValue = pathname.split('/search?search=')[1];
+                const result = cats.filter(cat => 
+                    Object.values(cat).some(value =>
+                    value.toLowerCase().includes(searchedValue.toLowerCase())
+                ));                
+                res.write(homePage(result));
+                               
+            }
     }
     
     res.end();
